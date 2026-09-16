@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bài 8 – OOP: Quản lý CD (Mảng động + CRUD đầy đủ)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #eef5f9;
+            padding: 2rem 1rem;
+            color: #0b2b3c;
+            line-height: 1.7;
+        }
+        
+        .container {
+            max-width: 1150px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px -12px rgba(0, 20, 30, 0.25);
+            padding: 2.5rem 2rem;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #0a2e3f;
+            border-left: 6px solid #2b7a8a;
+            padding-left: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: #2c5f6e;
+            margin-bottom: 2rem;
+            padding-left: 1.8rem;
+            border-bottom: 2px dashed #d0e2e8;
+            padding-bottom: 0.8rem;
+        }
+        
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #1a4b5a;
+            margin: 2.2rem 0 1rem 0;
+            padding-bottom: 0.3rem;
+            border-bottom: 3px solid #ddeef3;
+        }
+        
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #235c6e;
+            margin: 1.8rem 0 0.8rem 0;
+        }
+        
+        p,
+        li {
+            margin-bottom: 0.8rem;
+            color: #1e3b47;
+        }
+        
+        ul,
+        ol {
+            padding-left: 1.8rem;
+            margin: 0.8rem 0 1.2rem 0;
+        }
+        
+        .highlight-box {
+            background: #edf7fa;
+            padding: 1.2rem 1.8rem;
+            border-radius: 16px;
+            border-left: 6px solid #1d7b8c;
+            margin: 1.5rem 0;
+        }
+        
+        .highlight-box strong {
+            color: #0b4b5a;
+        }
+        
+        code {
+            background: #eef3f6;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            color: #1b4e5e;
+        }
+        
+        pre {
+            background: #0d1f2a;
+            color: #e3f0f5;
+            padding: 1.6rem 1.8rem;
+            border-radius: 18px;
+            overflow-x: auto;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            margin: 1.2rem 0 2rem 0;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        pre .comment {
+            color: #7fad9f;
+        }
+        
+        pre .keyword {
+            color: #f7c948;
+        }
+        
+        pre .string {
+            color: #b3d9a8;
+        }
+        
+        pre .type {
+            color: #7fc1d9;
+        }
+        
+        pre .method {
+            color: #f2a98b;
+        }
+        
+        pre .annotation {
+            color: #c9a0d4;
+        }
+        
+        pre .number {
+            color: #b5cea8;
+        }
+        
+        .btn-copy {
+            background: #2b7a8a;
+            border: none;
+            color: white;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            float: right;
+            margin-top: 0.2rem;
+        }
+        
+        .btn-copy:hover {
+            background: #1d5f6e;
+            transform: scale(0.97);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: #f4f9fc;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        
+        th {
+            background: #1d6d7e;
+            color: white;
+            padding: 0.8rem 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #d6e6ec;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #ddeef3;
+            text-align: center;
+            color: #3d6b7a;
+            font-size: 0.95rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #1d7b8c;
+            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            margin-right: 0.5rem;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem 1rem;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+            pre {
+                font-size: 0.78rem;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>💿 Bài 8 – OOP: Quản lý CD (Mảng tự động mở rộng)</h1>
+        <div class="subtitle">CRUD đầy đủ: Thêm – Xóa – Sửa – Cập nhật – Tìm kiếm – Thống kê – Sắp xếp</div>
+
+        <!-- ==================== PHẦN 1: MÔ TẢ ==================== -->
+        <section>
+            <h2>📌 1. Mô tả bài toán</h2>
+            <p><strong>Lớp đối tượng CD</strong> gồm:</p>
+            <ul>
+                <li><strong>Mã CD</strong> (int &gt; 0, mặc định 999999)</li>
+                <li><strong>Tựa CD</strong> (chuỗi không rỗng, mặc định "chua xac dinh")</li>
+                <li><strong>Số bài hát</strong> (int &gt; 0)</li>
+                <li><strong>Giá thành</strong> (double &gt; 0)</li>
+            </ul>
+
+            <p><strong>Yêu cầu:</strong></p>
+            <ol>
+                <li>Viết lớp <code>CD</code> với getter/setter kiểm tra ràng buộc, constructor, <code>toString</code>.</li>
+                <li>Viết lớp <code>CDList</code> dùng <strong>mảng nguyên thủy</strong>:
+                    <ul>
+                        <li><strong>Tự động mở rộng mảng</strong> khi đầy (không giới hạn MAX cứng).</li>
+                        <li><strong>Thêm</strong> CD (không cho trùng mã).</li>
+                        <li><strong>Xóa</strong> CD theo mã.</li>
+                        <li><strong>Sửa</strong> (cập nhật) tựa CD, số bài hát, giá thành theo mã.</li>
+                        <li><strong>Tìm kiếm</strong> theo mã hoặc theo tựa.</li>
+                        <li><strong>Thống kê</strong>: số lượng, tổng giá thành, giá trung bình, CD đắt nhất, CD rẻ nhất.</li>
+                        <li><strong>Sắp xếp</strong> giảm dần theo giá, tăng dần theo tựa CD.</li>
+                    </ul>
+                </li>
+                <li>Viết lớp <code>Main</code> với menu case thực hiện tất cả chức năng.</li>
+            </ol>
+
+            <div class="highlight-box">
+                <strong>💡 Điểm mới:</strong> Khi mảng đầy, ta tạo mảng mới có kích thước gấp đôi và sao chép toàn bộ dữ liệu cũ sang → không bao giờ tràn mảng.
+            </div>
+        </section>
+
+        <!-- ==================== PHẦN 2: PHÂN TÍCH ==================== -->
+        <section>
+            <h2>🧠 2. Phân tích thiết kế</h2>
+
+            <h3>2.1. Cơ chế mở rộng mảng động</h3>
+            <p>Ban đầu mảng có kích thước <code>khaNang = 10</code>. Khi <code>soLuong == khaNang</code>, ta:</p>
+            <ol>
+                <li>Tạo mảng mới có kích thước <code>khaNang * 2</code>.</li>
+                <li>Dùng vòng lặp sao chép từng phần tử từ mảng cũ sang mảng mới.</li>
+                <li>Gán mảng mới cho <code>danhSachCD</code> và cập nhật <code>khaNang</code>.</li>
+            </ol>
+            <p>Nhờ vậy, chương trình không bao giờ hết chỗ chứa CD.</p>
+
+            <h3>2.2. Kiểm tra trùng mã</h3>
+            <p>Trước khi thêm, duyệt mảng tìm <code>maCD</code> trùng. Nếu có → từ chối thêm.</p>
+
+            <h3>2.3. Xóa phần tử</h3>
+            <p>Tìm vị trí cần xóa, sau đó dịch các phần tử phía sau sang trái 1 ô và giảm <code>soLuong</code>.</p>
+
+            <h3>2.4. Sửa / Cập nhật</h3>
+            <p>Tìm theo mã, sau đó gọi setter để cập nhật từng thuộc tính (tựa, số bài, giá). Mã CD không sửa.</p>
+
+            <h3>2.5. Thống kê</h3>
+            <ul>
+                <li>Số lượng CD hiện có.</li>
+                <li>Tổng giá thành.</li>
+                <li>Giá trung bình.</li>
+                <li>CD đắt nhất, CD rẻ nhất.</li>
+            </ul>
+        </section>
+
+        <!-- ==================== PHẦN 3: CODE ==================== -->
+        <section>
+            <h2>💻 3. Code hoàn chỉnh (copy – paste)</h2>
+            <p>3 file: <code>CD.java</code>, <code>CDList.java</code>, <code>Main.java</code></p>
+
+            <button class="btn-copy" onclick="copyCode()">📋 Sao chép code</button>
+            <pre id="codeBlock"><span class="comment">// ==============================================================</span>
+<span class="comment">// ========== File 1: CD.java ==========</span>
+<span class="keyword">public class</span> <span class="type">CD</span> {
+    <span class="comment">// ---------- Thuộc tính (private) ----------</span>
+    <span class="keyword">private int</span> maCD;
+    <span class="keyword">private</span> <span class="type">String</span> tuaCD;
+    <span class="keyword">private int</span> soBaiHat;
+    <span class="keyword">private double</span> giaThanh;
+
+    <span class="comment">// ---------- Hằng số mặc định ----------</span>
+    <span class="keyword">public static final int</span> MA_CD_MAC_DINH = <span class="number">999999</span>;
+    <span class="keyword">public static final</span> <span class="type">String</span> TUA_CD_MAC_DINH = <span class="string">"chua xac dinh"</span>;
+
+    <span class="comment">// ---------- Constructor mặc định ----------</span>
+    <span class="keyword">public</span> <span class="method">CD</span>() {
+        <span class="keyword">this</span>.maCD = MA_CD_MAC_DINH;
+        <span class="keyword">this</span>.tuaCD = TUA_CD_MAC_DINH;
+        <span class="keyword">this</span>.soBaiHat = <span class="number">1</span>;
+        <span class="keyword">this</span>.giaThanh = <span class="number">1.0</span>;
+    }
+
+    <span class="comment">// ---------- Constructor có tham số ----------</span>
+    <span class="keyword">public</span> <span class="method">CD</span>(<span class="keyword">int</span> maCD, <span class="type">String</span> tuaCD, <span class="keyword">int</span> soBaiHat, <span class="keyword">double</span> giaThanh) {
+        <span class="method">setMaCD</span>(maCD);
+        <span class="method">setTuaCD</span>(tuaCD);
+        <span class="method">setSoBaiHat</span>(soBaiHat);
+        <span class="method">setGiaThanh</span>(giaThanh);
+    }
+
+    <span class="comment">// ---------- Getter ----------</span>
+    <span class="keyword">public int</span> <span class="method">getMaCD</span>() { <span class="keyword">return</span> maCD; }
+    <span class="keyword">public</span> <span class="type">String</span> <span class="method">getTuaCD</span>() { <span class="keyword">return</span> tuaCD; }
+    <span class="keyword">public int</span> <span class="method">getSoBaiHat</span>() { <span class="keyword">return</span> soBaiHat; }
+    <span class="keyword">public double</span> <span class="method">getGiaThanh</span>() { <span class="keyword">return</span> giaThanh; }
+
+    <span class="comment">// ---------- Setter có kiểm tra ràng buộc ----------</span>
+    <span class="keyword">public void</span> <span class="method">setMaCD</span>(<span class="keyword">int</span> maCD) {
+        <span class="keyword">if</span> (maCD <= <span class="number">0</span>)
+            <span class="keyword">throw new</span> <span class="type">IllegalArgumentException</span>(<span class="string">"Lỗi: Mã CD phải > 0!"</span>);
+        <span class="keyword">this</span>.maCD = maCD;
+    }
+
+    <span class="keyword">public void</span> <span class="method">setTuaCD</span>(<span class="type">String</span> tuaCD) {
+        <span class="keyword">if</span> (tuaCD == <span class="keyword">null</span> || tuaCD.<span class="method">trim</span>().<span class="method">isEmpty</span>())
+            <span class="keyword">throw new</span> <span class="type">IllegalArgumentException</span>(<span class="string">"Lỗi: Tựa CD không được rỗng!"</span>);
+        <span class="keyword">this</span>.tuaCD = tuaCD;
+    }
+
+    <span class="keyword">public void</span> <span class="method">setSoBaiHat</span>(<span class="keyword">int</span> soBaiHat) {
+        <span class="keyword">if</span> (soBaiHat <= <span class="number">0</span>)
+            <span class="keyword">throw new</span> <span class="type">IllegalArgumentException</span>(<span class="string">"Lỗi: Số bài hát phải > 0!"</span>);
+        <span class="keyword">this</span>.soBaiHat = soBaiHat;
+    }
+
+    <span class="keyword">public void</span> <span class="method">setGiaThanh</span>(<span class="keyword">double</span> giaThanh) {
+        <span class="keyword">if</span> (giaThanh <= <span class="number">0</span>)
+            <span class="keyword">throw new</span> <span class="type">IllegalArgumentException</span>(<span class="string">"Lỗi: Giá thành phải > 0!"</span>);
+        <span class="keyword">this</span>.giaThanh = giaThanh;
+    }
+
+    <span class="comment">// ---------- toString định dạng bảng ----------</span>
+    <span class="annotation">@Override</span>
+    <span class="keyword">public</span> <span class="type">String</span> <span class="method">toString</span>() {
+        <span class="keyword">return</span> <span class="type">String</span>.<span class="method">format</span>(
+            <span class="string">"| %-10d | %-25s | %-12d | %-15.2f |"</span>,
+            maCD, tuaCD, soBaiHat, giaThanh);
+    }
+}
+
+<span class="comment">// ==============================================================</span>
+<span class="comment">// ========== File 2: CDList.java (Mảng tự mở rộng + CRUD đầy đủ) ==========</span>
+<span class="keyword">public class</span> <span class="type">CDList</span> {
+    <span class="comment">// ---------- Thuộc tính ----------</span>
+    <span class="keyword">private</span> <span class="type">CD</span>[] danhSachCD;      <span class="comment">// mảng động</span>
+    <span class="keyword">private int</span> soLuong;           <span class="comment">// số phần tử hiện có</span>
+    <span class="keyword">private int</span> khaNang;            <span class="comment">// sức chứa hiện tại của mảng</span>
+
+    <span class="keyword">private static final int</span> KICH_THUOC_BAN_DAU = <span class="number">5</span>;
+
+    <span class="comment">// ---------- Constructor khởi tạo ----------</span>
+    <span class="keyword">public</span> <span class="method">CDList</span>() {
+        khaNang = KICH_THUOC_BAN_DAU;
+        danhSachCD = <span class="keyword">new</span> <span class="type">CD</span>[khaNang];
+        soLuong = <span class="number">0</span>;
+    }
+
+    <span class="comment">// ---------- Tự động mở rộng mảng khi đầy ----------</span>
+    <span class="keyword">private void</span> <span class="method">moRongMang</span>() {
+        <span class="keyword">int</span> kichThuocMoi = khaNang * <span class="number">2</span>;
+        <span class="type">CD</span>[] mangMoi = <span class="keyword">new</span> <span class="type">CD</span>[kichThuocMoi];
+        <span class="comment">// Sao chép dữ liệu cũ sang mảng mới</span>
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < soLuong; i++) {
+            mangMoi[i] = danhSachCD[i];
+        }
+        danhSachCD = mangMoi;
+        khaNang = kichThuocMoi;
+        System.out.<span class="method">println</span>(<span class="string">"📈 Đã mở rộng mảng lên "</span> + khaNang + <span class="string">" phần tử."</span>);
+    }
+
+    <span class="comment">// ---------- Tìm vị trí CD theo mã (trả về -1 nếu không có) ----------</span>
+    <span class="keyword">public int</span> <span class="method">timViTriTheoMa</span>(<span class="keyword">int</span> maCD) {
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < soLuong; i++) {
+            <span class="keyword">if</span> (danhSachCD[i].<span class="method">getMaCD</span>() == maCD)
+                <span class="keyword">return</span> i;
+        }
+        <span class="keyword">return</span> -<span class="number">1</span>;
+    }
+
+    <span class="comment">// ========== THÊM ==========</span>
+    <span class="comment">// Trả về true nếu thêm thành công, false nếu trùng mã</span>
+    <span class="keyword">public boolean</span> <span class="method">themCD</span>(<span class="type">CD</span> cd) {
+        <span class="comment">// Kiểm tra trùng mã</span>
+        <span class="keyword">if</span> (<span class="method">timViTriTheoMa</span>(cd.<span class="method">getMaCD</span>()) != -<span class="number">1</span>) {
+            System.out.<span class="method">println</span>(<span class="string">"❌ Lỗi: Mã CD "</span> + cd.<span class="method">getMaCD</span>() + <span class="string">" đã tồn tại!"</span>);
+            <span class="keyword">return false</span>;
+        }
+        <span class="comment">// Nếu mảng đầy -> mở rộng</span>
+        <span class="keyword">if</span> (soLuong == khaNang) {
+            <span class="method">moRongMang</span>();
+        }
+        danhSachCD[soLuong] = cd;
+        soLuong++;
+        <span class="keyword">return true</span>;
+    }
+
+    <span class="comment">// ========== XÓA ==========</span>
+    <span class="keyword">public boolean</span> <span class="method">xoaCD</span>(<span class="keyword">int</span> maCD) {
+        <span class="keyword">int</span> viTri = <span class="method">timViTriTheoMa</span>(maCD);
+        <span class="keyword">if</span> (viTri == -<span class="number">1</span>) {
+            System.out.<span class="method">println</span>(<span class="string">"❌ Không tìm thấy CD có mã "</span> + maCD);
+            <span class="keyword">return false</span>;
+        }
+        <span class="comment">// Dịch các phần tử phía sau sang trái</span>
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = viTri; i < soLuong - <span class="number">1</span>; i++) {
+            danhSachCD[i] = danhSachCD[i + <span class="number">1</span>];
+        }
+        danhSachCD[soLuong - <span class="number">1</span>] = <span class="keyword">null</span>;
+        soLuong--;
+        <span class="keyword">return true</span>;
+    }
+
+    <span class="comment">// ========== SỬA / CẬP NHẬT ==========</span>
+    <span class="comment">// Cập nhật thông tin CD theo mã (không sửa mã CD)</span>
+    <span class="keyword">public boolean</span> <span class="method">capNhatCD</span>(<span class="keyword">int</span> maCD, <span class="type">String</span> tuaMoi,
+                             <span class="keyword">int</span> soBaiMoi, <span class="keyword">double</span> giaMoi) {
+        <span class="keyword">int</span> viTri = <span class="method">timViTriTheoMa</span>(maCD);
+        <span class="keyword">if</span> (viTri == -<span class="number">1</span>) {
+            System.out.<span class="method">println</span>(<span class="string">"❌ Không tìm thấy CD có mã "</span> + maCD);
+            <span class="keyword">return false</span>;
+        }
+        <span class="type">CD</span> cd = danhSachCD[viTri];
+        cd.<span class="method">setTuaCD</span>(tuaMoi);
+        cd.<span class="method">setSoBaiHat</span>(soBaiMoi);
+        cd.<span class="method">setGiaThanh</span>(giaMoi);
+        <span class="keyword">return true</span>;
+    }
+
+    <span class="comment">// ========== TÌM KIẾM ==========</span>
+    <span class="keyword">public</span> <span class="type">CD</span> <span class="method">timTheoMa</span>(<span class="keyword">int</span> maCD) {
+        <span class="keyword">int</span> viTri = <span class="method">timViTriTheoMa</span>(maCD);
+        <span class="keyword">return</span> (viTri == -<span class="number">1</span>) ? <span class="keyword">null</span> : danhSachCD[viTri];
+    }
+
+    <span class="comment">// Tìm theo tựa CD (chứa chuỗi con, không phân biệt hoa thường)</span>
+    <span class="keyword">public void</span> <span class="method">timTheoTua</span>(<span class="type">String</span> tuKhoa) {
+        <span class="keyword">boolean</span> timThay = <span class="keyword">false</span>;
+        System.out.<span class="method">println</span>(<span class="string">"\n🔍 Kết quả tìm kiếm với từ khóa '"</span> + tuKhoa + <span class="string">"':"</span>);
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < soLuong; i++) {
+            <span class="keyword">if</span> (danhSachCD[i].<span class="method">getTuaCD</span>().<span class="method">toLowerCase</span>()
+                    .<span class="method">contains</span>(tuKhoa.<span class="method">toLowerCase</span>())) {
+                System.out.<span class="method">println</span>(danhSachCD[i]);
+                timThay = <span class="keyword">true</span>;
+            }
+        }
+        <span class="keyword">if</span> (!timThay) System.out.<span class="method">println</span>(<span class="string">"Không có CD nào phù hợp."</span>);
+    }
+
+    <span class="comment">// ========== THỐNG KÊ ==========</span>
+    <span class="keyword">public int</span> <span class="method">tinhSoLuongCD</span>() {
+        <span class="keyword">return</span> soLuong;
+    }
+
+    <span class="keyword">public double</span> <span class="method">tinhTongGiaThanh</span>() {
+        <span class="keyword">double</span> tong = <span class="number">0</span>;
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < soLuong; i++)
+            tong += danhSachCD[i].<span class="method">getGiaThanh</span>();
+        <span class="keyword">return</span> tong;
+    }
+
+    <span class="keyword">public double</span> <span class="method">tinhGiaTrungBinh</span>() {
+        <span class="keyword">if</span> (soLuong == <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;
+        <span class="keyword">return</span> <span class="method">tinhTongGiaThanh</span>() / soLuong;
+    }
+
+    <span class="keyword">public</span> <span class="type">CD</span> <span class="method">timCDDatNhat</span>() {
+        <span class="keyword">if</span> (soLuong == <span class="number">0</span>) <span class="keyword">return null</span>;
+        <span class="type">CD</span> max = danhSachCD[<span class="number">0</span>];
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i < soLuong; i++)
+            <span class="keyword">if</span> (danhSachCD[i].<span class="method">getGiaThanh</span>() > max.<span class="method">getGiaThanh</span>())
+                max = danhSachCD[i];
+        <span class="keyword">return</span> max;
+    }
+
+    <span class="keyword">public</span> <span class="type">CD</span> <span class="method">timCDReNhat</span>() {
+        <span class="keyword">if</span> (soLuong == <span class="number">0</span>) <span class="keyword">return null</span>;
+        <span class="type">CD</span> min = danhSachCD[<span class="number">0</span>];
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i < soLuong; i++)
+            <span class="keyword">if</span> (danhSachCD[i].<span class="method">getGiaThanh</span>() < min.<span class="method">getGiaThanh</span>())
+                min = danhSachCD[i];
+        <span class="keyword">return</span> min;
+    }
+
+    <span class="comment">// ========== HIỂN THỊ ==========</span>
+    <span class="keyword">public void</span> <span class="method">hienThiDanhSach</span>() {
+        <span class="keyword">if</span> (soLuong == <span class="number">0</span>) {
+            System.out.<span class="method">println</span>(<span class="string">"📭 Danh sách CD trống!"</span>);
+            <span class="keyword">return</span>;
+        }
+        System.out.<span class="method">println</span>(<span class="string">"\n+------------+---------------------------+--------------+-----------------+"</span>);
+        System.out.<span class="method">println</span>(<span class="string">"|   Mã CD    |          Tựa CD           |  Số bài hát  |    Giá thành    |"</span>);
+        System.out.<span class="method">println</span>(<span class="string">"+------------+---------------------------+--------------+-----------------+"</span>);
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < soLuong; i++)
+            System.out.<span class="method">println</span>(danhSachCD[i]);
+        System.out.<span class="method">println</span>(<span class="string">"+------------+---------------------------+--------------+-----------------+"</span>);
+    }
+
+    <span class="comment">// ========== SẮP XẾP ==========</span>
+    <span class="comment">// Giảm dần theo giá thành (Bubble Sort)</span>
+    <span class="keyword">public void</span> <span class="method">sapXepGiamDanTheoGia</span>() {
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < soLuong - <span class="number">1</span>; i++) {
+            <span class="keyword">for</span> (<span class="keyword">int</span> j = i + <span class="number">1</span>; j < soLuong; j++) {
+                <span class="keyword">if</span> (danhSachCD[i].<span class="method">getGiaThanh</span>() < danhSachCD[j].<span class="method">getGiaThanh</span>()) {
+                    <span class="type">CD</span> temp = danhSachCD[i];
+                    danhSachCD[i] = danhSachCD[j];
+                    danhSachCD[j] = temp;
+                }
+            }
+        }
+        System.out.<span class="method">println</span>(<span class="string">"✅ Đã sắp xếp giảm dần theo giá thành."</span>);
+    }
+
+    <span class="comment">// Tăng dần theo tựa CD (không phân biệt hoa thường)</span>
+    <span class="keyword">public void</span> <span class="method">sapXepTangDanTheoTua</span>() {
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < soLuong - <span class="number">1</span>; i++) {
+            <span class="keyword">for</span> (<span class="keyword">int</span> j = i + <span class="number">1</span>; j < soLuong; j++) {
+                <span class="keyword">if</span> (danhSachCD[i].<span class="method">getTuaCD</span>()
+                        .<span class="method">compareToIgnoreCase</span>(danhSachCD[j].<span class="method">getTuaCD</span>()) > <span class="number">0</span>) {
+                    <span class="type">CD</span> temp = danhSachCD[i];
+                    danhSachCD[i] = danhSachCD[j];
+                    danhSachCD[j] = temp;
+                }
+            }
+        }
+        System.out.<span class="method">println</span>(<span class="string">"✅ Đã sắp xếp tăng dần theo tựa CD."</span>);
+    }
+}
+
+<span class="comment">// ==============================================================</span>
+<span class="comment">// ========== File 3: Main.java (Menu đầy đủ chức năng) ==========</span>
+<span class="keyword">import</span> java.util.Scanner;
+
+<span class="keyword">public class</span> <span class="type">Main</span> {
+    <span class="keyword">public static void</span> <span class="method">main</span>(<span class="type">String</span>[] args) {
+        <span class="type">Scanner</span> sc = <span class="keyword">new</span> <span class="type">Scanner</span>(System.in);
+        <span class="type">CDList</span> ql = <span class="keyword">new</span> <span class="type">CDList</span>();
+        <span class="keyword">int</span> luaChon = -<span class="number">1</span>;
+
+        <span class="keyword">do</span> {
+            System.out.<span class="method">println</span>(<span class="string">"\n╔═════════════ MENU QUẢN LÝ CD ═════════════╗"</span>);
+            System.out.<span class="method">println</span>(<span class="string">"║  1. Thêm CD (tự mở rộng mảng khi đầy)     ║"</span>);
+            System.out.<span class="method">println</span>(<span class="string">"║  2. Xóa CD theo mã                        ║"</span>);
+            System.out.<span class="method">println</span>(<span class="string">"║  3. Sửa / Cập nhật CD theo mã             ║"</span>);
+            System.out.<span class="method">println</span>(<span class="string">"║  4. Tìm kiếm theo mã                      ║"</span>);
+            System.out.<span class="method">println</span>(<span class="string">"║  5. Tìm kiếm theo tựa (từ khóa)           ║"</span>);
+            System.out.<span class="method">println</span>(<span class="string">"║  6. Hiển thị danh sách                    ║"</span>);
+            System.out.<span class="method">println</span>(<span class="string">"║  7. Thống kê (số lượng, tổng, TB, max, min)║"</span>);
+            System.out.<span class="method">println</span>(<span class="string">"║  8. Sắp xếp giảm dần theo giá thành       ║"</span>);
+            System.out.<span class="method">println</span>(<span class="string">"║  9. Sắp xếp tăng dần theo tựa CD          ║"</span>);
+            System.out.<span class="method">println</span>(<span class="string">"║  0. Thoát                                 ║"</span>);
+            System.out.<span class="method">println</span>(<span class="string">"╚═══════════════════════════════════════════╝"</span>);
+            System.out.<span class="method">print</span>(<span class="string">"👉 Chọn chức năng: "</span>);
+
+            <span class="keyword">try</span> {
+                luaChon = <span class="type">Integer</span>.<span class="method">parseInt</span>(sc.<span class="method">nextLine</span>());
+            } <span class="keyword">catch</span> (<span class="type">NumberFormatException</span> e) {
+                System.out.<span class="method">println</span>(<span class="string">"⚠️ Vui lòng nhập số!"</span>);
+                <span class="keyword">continue</span>;
+            }
+
+            <span class="keyword">switch</span> (luaChon) {
+                <span class="keyword">case</span> <span class="number">1</span>:
+                    <span class="keyword">try</span> {
+                        System.out.<span class="method">print</span>(<span class="string">"Nhập mã CD (>0): "</span>);
+                        <span class="keyword">int</span> ma = <span class="type">Integer</span>.<span class="method">parseInt</span>(sc.<span class="method">nextLine</span>());
+                        System.out.<span class="method">print</span>(<span class="string">"Nhập tựa CD: "</span>);
+                        <span class="type">String</span> tua = sc.<span class="method">nextLine</span>();
+                        System.out.<span class="method">print</span>(<span class="string">"Nhập số bài hát (>0): "</span>);
+                        <span class="keyword">int</span> sbh = <span class="type">Integer</span>.<span class="method">parseInt</span>(sc.<span class="method">nextLine</span>());
+                        System.out.<span class="method">print</span>(<span class="string">"Nhập giá thành (>0): "</span>);
+                        <span class="keyword">double</span> gia = <span class="type">Double</span>.<span class="method">parseDouble</span>(sc.<span class="method">nextLine</span>());
+
+                        <span class="keyword">if</span> (ql.<span class="method">themCD</span>(<span class="keyword">new</span> <span class="type">CD</span>(ma, tua, sbh, gia)))
+                            System.out.<span class="method">println</span>(<span class="string">"✅ Thêm CD thành công!"</span>);
+                    } <span class="keyword">catch</span> (<span class="type">Exception</span> e) {
+                        System.out.<span class="method">println</span>(e.<span class="method">getMessage</span>());
+                    }
+                    <span class="keyword">break</span>;
+
+                <span class="keyword">case</span> <span class="number">2</span>:
+                    <span class="keyword">try</span> {
+                        System.out.<span class="method">print</span>(<span class="string">"Nhập mã CD cần xóa: "</span>);
+                        <span class="keyword">int</span> maXoa = <span class="type">Integer</span>.<span class="method">parseInt</span>(sc.<span class="method">nextLine</span>());
+                        <span class="keyword">if</span> (ql.<span class="method">xoaCD</span>(maXoa))
+                            System.out.<span class="method">println</span>(<span class="string">"🗑️ Đã xóa CD mã "</span> + maXoa);
+                    } <span class="keyword">catch</span> (<span class="type">NumberFormatException</span> e) {
+                        System.out.<span class="method">println</span>(<span class="string">"⚠️ Mã phải là số nguyên!"</span>);
+                    }
+                    <span class="keyword">break</span>;
+
+                <span class="keyword">case</span> <span class="number">3</span>:
+                    <span class="keyword">try</span> {
+                        System.out.<span class="method">print</span>(<span class="string">"Nhập mã CD cần sửa: "</span>);
+                        <span class="keyword">int</span> maSua = <span class="type">Integer</span>.<span class="method">parseInt</span>(sc.<span class="method">nextLine</span>());
+                        System.out.<span class="method">print</span>(<span class="string">"Tựa CD mới: "</span>);
+                        <span class="type">String</span> tuaMoi = sc.<span class="method">nextLine</span>();
+                        System.out.<span class="method">print</span>(<span class="string">"Số bài hát mới: "</span>);
+                        <span class="keyword">int</span> sbhMoi = <span class="type">Integer</span>.<span class="method">parseInt</span>(sc.<span class="method">nextLine</span>());
+                        System.out.<span class="method">print</span>(<span class="string">"Giá thành mới: "</span>);
+                        <span class="keyword">double</span> giaMoi = <span class="type">Double</span>.<span class="method">parseDouble</span>(sc.<span class="method">nextLine</span>());
+
+                        <span class="keyword">if</span> (ql.<span class="method">capNhatCD</span>(maSua, tuaMoi, sbhMoi, giaMoi))
+                            System.out.<span class="method">println</span>(<span class="string">"✅ Đã cập nhật CD mã "</span> + maSua);
+                    } <span class="keyword">catch</span> (<span class="type">Exception</span> e) {
+                        System.out.<span class="method">println</span>(e.<span class="method">getMessage</span>());
+                    }
+                    <span class="keyword">break</span>;
+
+                <span class="keyword">case</span> <span class="number">4</span>:
+                    <span class="keyword">try</span> {
+                        System.out.<span class="method">print</span>(<span class="string">"Nhập mã CD cần tìm: "</span>);
+                        <span class="keyword">int</span> maTim = <span class="type">Integer</span>.<span class="method">parseInt</span>(sc.<span class="method">nextLine</span>());
+                        <span class="type">CD</span> kq = ql.<span class="method">timTheoMa</span>(maTim);
+                        <span class="keyword">if</span> (kq != <span class="keyword">null</span>) {
+                            System.out.<span class="method">println</span>(<span class="string">"🔍 Tìm thấy:"</span>);
+                            System.out.<span class="method">println</span>(kq);
+                        } <span class="keyword">else</span> {
+                            System.out.<span class="method">println</span>(<span class="string">"❌ Không có CD mã "</span> + maTim);
+                        }
+                    } <span class="keyword">catch</span> (<span class="type">NumberFormatException</span> e) {
+                        System.out.<span class="method">println</span>(<span class="string">"⚠️ Mã phải là số!"</span>);
+                    }
+                    <span class="keyword">break</span>;
+
+                <span class="keyword">case</span> <span class="number">5</span>:
+                    System.out.<span class="method">print</span>(<span class="string">"Nhập từ khóa tựa CD: "</span>);
+                    <span class="type">String</span> tk = sc.<span class="method">nextLine</span>();
+                    ql.<span class="method">timTheoTua</span>(tk);
+                    <span class="keyword">break</span>;
+
+                <span class="keyword">case</span> <span class="number">6</span>:
+                    ql.<span class="method">hienThiDanhSach</span>();
+                    <span class="keyword">break</span>;
+
+                <span class="keyword">case</span> <span class="number">7</span>:
+                    System.out.<span class="method">println</span>(<span class="string">"\n===== THỐNG KÊ ====="</span>);
+                    System.out.<span class="method">println</span>(<span class="string">"📊 Số lượng CD: "</span> + ql.<span class="method">tinhSoLuongCD</span>());
+                    System.out.<span class="method">printf</span>(<span class="string">"💰 Tổng giá thành: %,.2f VNĐ\n"</span>, ql.<span class="method">tinhTongGiaThanh</span>());
+                    System.out.<span class="method">printf</span>(<span class="string">"📈 Giá trung bình: %,.2f VNĐ\n"</span>, ql.<span class="method">tinhGiaTrungBinh</span>());
+                    <span class="type">CD</span> max = ql.<span class="method">timCDDatNhat</span>();
+                    <span class="type">CD</span> min = ql.<span class="method">timCDReNhat</span>();
+                    <span class="keyword">if</span> (max != <span class="keyword">null</span>) {
+                        System.out.<span class="method">println</span>(<span class="string">"💎 CD đắt nhất:"</span>);
+                        System.out.<span class="method">println</span>(<span class="string">"   "</span> + max);
+                        System.out.<span class="method">println</span>(<span class="string">"💵 CD rẻ nhất:"</span>);
+                        System.out.<span class="method">println</span>(<span class="string">"   "</span> + min);
+                    }
+                    <span class="keyword">break</span>;
+
+                <span class="keyword">case</span> <span class="number">8</span>:
+                    ql.<span class="method">sapXepGiamDanTheoGia</span>();
+                    ql.<span class="method">hienThiDanhSach</span>();
+                    <span class="keyword">break</span>;
+
+                <span class="keyword">case</span> <span class="number">9</span>:
+                    ql.<span class="method">sapXepTangDanTheoTua</span>();
+                    ql.<span class="method">hienThiDanhSach</span>();
+                    <span class="keyword">break</span>;
+
+                <span class="keyword">case</span> <span class="number">0</span>:
+                    System.out.<span class="method">println</span>(<span class="string">"👋 Tạm biệt!"</span>);
+                    <span class="keyword">break</span>;
+
+                <span class="keyword">default</span>:
+                    System.out.<span class="method">println</span>(<span class="string">"⚠️ Lựa chọn không hợp lệ!"</span>);
+            }
+        } <span class="keyword">while</span> (luaChon != <span class="number">0</span>);
+
+        sc.<span class="method">close</span>();
+    }
+}</pre>
+        </section>
+
+        <!-- ==================== PHẦN 4: HƯỚNG DẪN ==================== -->
+        <section>
+            <h2>🧪 4. Hướng dẫn chạy &amp; kết quả mẫu</h2>
+            <pre style="background:#1a2e3a; color:#c7e0e8;">javac CD.java CDList.java Main.java
+java Main</pre>
+
+            <p><strong>Kết quả mẫu:</strong></p>
+            <pre style="background:#1a2e3a; color:#b8d8e0;">╔═════════════ MENU QUẢN LÝ CD ═════════════╗
+║  1. Thêm CD (tự mở rộng mảng khi đầy)     ║
+║  2. Xóa CD theo mã                        ║
+║  3. Sửa / Cập nhật CD theo mã             ║
+...
+👉 Chọn chức năng: 1
+Nhập mã CD (>0): 101
+Nhập tựa CD: Nhạc Trịnh
+Nhập số bài hát (>0): 12
+Nhập giá thành (>0): 150000
+✅ Thêm CD thành công!
+
+👉 Chọn chức năng: 1
+... (thêm 5 CD nữa để thấy mảng tự mở rộng)
+📈 Đã mở rộng mảng lên 10 phần tử.
+
+👉 Chọn chức năng: 7
+
+===== THỐNG KÊ =====
+📊 Số lượng CD: 6
+💰 Tổng giá thành: 850,000.00 VNĐ
+📈 Giá trung bình: 141,666.67 VNĐ
+💎 CD đắt nhất:
+| 105        | Rock Việt                 | 15           | 250000.00       |</pre>
+        </section>
+
+        <!-- ==================== PHẦN 5: TỔNG KẾT ==================== -->
+        <section>
+            <h2>✅ 5. Tổng kết kiến thức</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Chức năng</th>
+                        <th>Phương thức</th>
+                        <th>Kỹ thuật</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Thêm CD (chống trùng)</td>
+                        <td><code>themCD()</code></td>
+                        <td>Duyệt mảng + tự mở rộng</td>
+                    </tr>
+                    <tr>
+                        <td>Xóa CD theo mã</td>
+                        <td><code>xoaCD()</code></td>
+                        <td>Dịch trái phần tử</td>
+                    </tr>
+                    <tr>
+                        <td>Sửa / Cập nhật</td>
+                        <td><code>capNhatCD()</code></td>
+                        <td>Tìm + setter</td>
+                    </tr>
+                    <tr>
+                        <td>Tìm theo mã / tựa</td>
+                        <td><code>timTheoMa()</code>, <code>timTheoTua()</code></td>
+                        <td>Duyệt tuần tự</td>
+                    </tr>
+                    <tr>
+                        <td>Thống kê</td>
+                        <td><code>tinhSoLuongCD()</code>, <code>tinhTongGiaThanh()</code>...</td>
+                        <td>Vòng lặp tích lũy</td>
+                    </tr>
+                    <tr>
+                        <td>Sắp xếp</td>
+                        <td><code>sapXepGiamDanTheoGia()</code>, ...</td>
+                        <td>Bubble Sort</td>
+                    </tr>
+                    <tr>
+                        <td>Mở rộng mảng</td>
+                        <td><code>moRongMang()</code></td>
+                        <td>Nhân đôi kích thước + copy</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="highlight-box">
+                <strong>💡 Mẹo:</strong> Cơ chế mở rộng mảng gấp đôi giúp giảm số lần cấp phát bộ nhớ, đạt độ phức tạp trung bình O(1) cho thao tác thêm — giống cơ chế của <code>ArrayList</code> trong Java.
+            </div>
+        </section>
+
+        <div class="footer">
+            <p>💿 <strong>Bài 8 hoàn chỉnh</strong> Mảng tự mở rộng, CRUD đầy đủ, thống kê, sắp xếp, menu</p>
+        </div>
+    </div>
+
+    <script>
+        function copyCode() {
+            const code = document.getElementById('codeBlock').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.querySelector('.btn-copy');
+                const originalText = btn.innerText;
+                btn.innerText = '✅ Đã sao chép!';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                }, 2500);
+            }).catch(err => {
+                alert('Không thể sao chép, bạn hãy tự tay copy nhé!');
+            });
+        }
+    </script>
+</body>
+
+</html>
